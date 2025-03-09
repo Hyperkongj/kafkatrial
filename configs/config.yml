@@ -1,0 +1,11 @@
+kafka:
+  topic: mastodon_updates
+  server: kafka:9092
+
+elasticsearch:
+  host: http://elasticsearch:9200
+  index: mastodon_index
+NewsAPI:
+  topic: Apple
+TwitterAPI:
+  topic: Apple

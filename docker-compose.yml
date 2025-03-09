@@ -1,0 +1,86 @@
+
+
+services:
+  zookeeper:
+    image: wurstmeister/zookeeper
+    container_name: zookeeper
+    ports:
+      - "2181:2181"
+
+  kafka:
+    image: wurstmeister/kafka
+    container_name: kafka
+    ports:
+      - "9092:9092"
+    environment:
+      KAFKA_ADVERTISED_HOST_NAME: kafka
+      KAFKA_ZOOKEEPER_CONNECT: zookeeper:2181
+      KAFKA_CREATE_TOPICS: "mastodon_updates:1:1"
+    depends_on:
+      - zookeeper
+
+  elasticsearch:
+    image: elasticsearch:8.6.2
+    platform: linux/amd64
+    container_name: elasticsearch
+    ports:
+      - "9200:9200"
+    environment:
+      discovery.type: "single-node"
+      # Enable security
+      xpack.security.enabled: "true"
+      # Disable TLS for local development (not recommended for production)
+      xpack.security.http.ssl.enabled: "false"
+      xpack.security.transport.ssl.enabled: "false"
+      # Set the password for the elastic superuser
+      ELASTIC_PASSWORD: "changeme"
+      # Limit heap size to 1GB
+      ES_JAVA_OPTS: "-Xms1g -Xmx1g"
+
+  kibana:
+    image: kibana:8.6.2
+    platform: linux/amd64
+    container_name: kibana
+    ports:
+      - "5601:5601"
+    environment:
+      # For Kibana 8.x, use ELASTICSEARCH_HOSTS (plural)
+      ELASTICSEARCH_HOSTS: "http://elasticsearch:9200"
+      # Use the dedicated Kibana service account instead of the superuser
+      ELASTICSEARCH_USERNAME: "kibana_system"
+      ELASTICSEARCH_PASSWORD: "changeme"
+      # (For local dev only) Allow Kibana to run as the kibana_system user
+      XPACK_SECURITY_ALLOWUSINGELASTICUSER: "true"
+    depends_on:
+      - elasticsearch
+
+  producer:
+    build:
+      context: ./producer
+      dockerfile: Dockerfile
+    container_name: producer
+    environment:
+      MASTODON_ACCESS_TOKEN: "Ph12SIWKcIv38zoYxgYaHivRYgrHH1wS4Qg-qwkpi64"
+      MASTODON_API_BASE_URL: "https://mastodon.social"
+      KAFKA_SERVER: "kafka:9092"
+      KAFKA_TOPIC: "mastodon_updates"
+    depends_on:
+      - kafka
+
+  consumer:
+    build:
+      context: ./consumer
+      dockerfile: Dockerfile
+    container_name: consumer
+    working_dir: /app/consumer
+    environment:
+      PYTHONPATH: /app/consumer
+      KAFKA_SERVER: "kafka:9092"
+      KAFKA_TOPIC: "mastodon_updates"
+      ELASTICSEARCH_HOST: "http://elasticsearch:9200"
+      ELASTICSEARCH_INDEX: "mastodon_index"
+    depends_on:
+      - kafka
+      - elasticsearch
+    command: ["python","main.py"]
+    #command: python -m consumer.main

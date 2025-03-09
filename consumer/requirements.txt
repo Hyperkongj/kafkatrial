@@ -1,0 +1,4 @@
+kafka-python==2.0.2
+elasticsearch==8.4.2
+python-dotenv==0.21.0
+apscheduler==3.8.1
