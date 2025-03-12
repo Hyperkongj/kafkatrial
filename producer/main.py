@@ -2,14 +2,17 @@ import os
 import logging
 from time import sleep
 from dotenv import load_dotenv
-from mastodon import Mastodon, StreamListener
+from mastodon import Mastodon
 from producer import Producer
+from listener import CustomListener  # Import our custom listener
 
+# Configure logging
 logging.basicConfig(level=logging.INFO, format="%(asctime)s [%(levelname)s] %(message)s")
 logger = logging.getLogger(__name__)
 
 load_dotenv()
 
+# Retrieve credentials and configuration from environment variables
 MASTODON_ACCESS_TOKEN = os.getenv("MASTODON_ACCESS_TOKEN")
 MASTODON_API_BASE_URL = os.getenv("MASTODON_API_BASE_URL")
 KAFKA_SERVER = os.getenv("KAFKA_SERVER", "kafka:9092")
@@ -25,34 +28,12 @@ mastodon_client = Mastodon(
     api_base_url=MASTODON_API_BASE_URL
 )
 
-# Initialize Kafka producer
+# Initialize Kafka producer (assumes producer.py implements a Producer class with a send method)
 producer = Producer(kafka_server=KAFKA_SERVER, kafka_topic=KAFKA_TOPIC)
 
-class MastodonListener(StreamListener):
-    def on_update(self, status):
-        try:
-            if isinstance(status, dict):
-                username = status.get("account", {}).get("username", "unknown")
-                content = status.get("content", "")
-                created_at = status.get("created_at", "")
-                logger.info("New toot from @%s at %s", username, created_at)
-                producer.send({
-                    "username": username,
-                    "content": content,
-                    "created_at": created_at
-                })
-            else:
-                logger.warning("Received update in unexpected format: %s", status)
-        except Exception as e:
-            logger.exception("Error processing Mastodon update: %s", e)
-
-    def on_error(self, error):
-        logger.error("Mastodon stream error: %s", error)
-        # Return True to keep stream alive after an error
-        return True
-
 def main():
-    listener = MastodonListener()
+    # Instantiate the custom listener from listener.py
+    listener = CustomListener()
     while True:
         try:
             logger.info("Starting Mastodon public stream...")

@@ -36,6 +36,8 @@ services:
       ELASTIC_PASSWORD: "changeme"
       # Limit heap size to 1GB
       ES_JAVA_OPTS: "-Xms1g -Xmx1g"
+    volumes:
+      - elastic_data:/usr/share/elasticsearch/data
 
   kibana:
     image: kibana:8.6.2
@@ -48,7 +50,7 @@ services:
       ELASTICSEARCH_HOSTS: "http://elasticsearch:9200"
       # Use the dedicated Kibana service account instead of the superuser
       ELASTICSEARCH_USERNAME: "kibana_system"
-      ELASTICSEARCH_PASSWORD: "changeme"
+      ELASTICSEARCH_PASSWORD: "7hckgsv-*HL5GmV4_gcaN"
       # (For local dev only) Allow Kibana to run as the kibana_system user
       XPACK_SECURITY_ALLOWUSINGELASTICUSER: "true"
     depends_on:
@@ -84,3 +86,5 @@ services:
       - elasticsearch
     command: ["python","main.py"]
     #command: python -m consumer.main
+volumes:
+  elastic_data:

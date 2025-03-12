@@ -17,7 +17,8 @@ class Producer:
             try:
                 self.producer = KafkaProducer(
                     bootstrap_servers=[self.server],
-                    value_serializer=lambda v: json.dumps(v).encode("utf-8")
+                    value_serializer=lambda v: json.dumps(v, default=lambda o: o.isoformat() if hasattr(o, 'isoformat') else o).encode("utf-8")
+
                 )
                 logger.info("Connected to Kafka at %s", self.server)
                 break
