@@ -116,7 +116,7 @@ The system captures the public timeline from Mastodon, processes the data, and m
                                                           ▼
                                                   ┌─────────────────┐
                                                   │                 │
-                                                  │     Kibana      │
+                                                  │     Kib ana      │
                                                   │                 │
                                                   │                 │
                                                   └─────────────────┘
