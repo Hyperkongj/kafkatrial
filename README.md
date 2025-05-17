@@ -120,7 +120,7 @@
   <!-- Step 2 -->
   <div class="step" style="display: flex; margin-bottom: 30px; align-items: flex-start;">
     <div style="width: 50px; height: 50px; background: linear-gradient(45deg, #8E24AA, #7B1FA2); border-radius: 50%; display: flex; justify-content: center; align-items: center; color: white; font-weight: bold; margin-right: 30px; flex-shrink: 0; box-shadow: 0 8px 15px rgba(142,36,170,0.2);">2</div>
-    <div style="background-color: white; border-radius: 12px; padding: 25px; flex-grow: 1; box-shadow: 0 8px 20px rgba(0,0,0,0.05);">
+    <div style="background-color: white; border-radius: 12px; padding: 25p x; flex-grow: 1; box-shadow: 0 8px 20px rgba(0,0,0,0.05);">
       <h4 style="margin-top: 0; margin-bottom: 15px; color: #8E24AA; font-size: 18px;">Create a Branch</h4>
       <p style="margin: 0 0 15px; color: #555; line-height: 1.6;">Create a new branch for your feature or bugfix to keep your changes isolated.</p>
       <div style="background-color: #2b2b2b; color: #f8f9fa; border-radius: 8px; padding: 15px; font-family: monospace; font-size: 14px; margin-top: 10px;">
